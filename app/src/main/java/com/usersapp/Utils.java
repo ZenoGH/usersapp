@@ -1,18 +1,19 @@
 package com.usersapp;
 
-import android.util.Log;
 
-import androidx.annotation.NonNull;
+import android.app.Activity;
+
+
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.logging.Handler;
 
 public class Utils {
-    private static Gson gson = new Gson();
+    static Gson gson = new Gson();
     private static OkHttpClient client = new OkHttpClient();
     static String url = "https://rest-full-for-edu.onrender.com/api/";
 
@@ -34,28 +35,33 @@ public class Utils {
                 if (response.isSuccessful()) {
                     String responseStr = response.body().string();
                     Log.i("success", responseStr);
+                    Payload[] payloads = gson.fromJson(responseStr, Payload[].class);
+                    Log.i("test", "test");
                 } else {
                     Log.e("failure", "Error. Response code " + response.code());
                 }
             }
         });
-        post(url + "create", json, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("failure", "FAIL!!!XDXD");
-                Log.e("ERROR", String.valueOf(e));
-            }
+//        post(url + "create", json, new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("failure", "FAIL!!!XDXD");
+//                Log.e("ERROR", String.valueOf(e));
+//            }
+//
+//            @Override public void onResponse(Call call, Response response) throws IOException {
+//                if (response.isSuccessful()) {
+//                    String responseStr = response.body().string();
+//                    Log.i("success", responseStr);
+//                } else {
+//                    Log.e("failure", "Error. Response code " + response.code());
+//                }
+//            }
+//        });
 
-            @Override public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseStr = response.body().string();
-                    Log.i("success", responseStr);
-                } else {
-                    Log.e("failure", "Error. Response code " + response.code());
-                }
-            }
-        });
     }
+
+
     static Call get(String url, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)

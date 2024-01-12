@@ -4,7 +4,9 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -69,9 +71,12 @@ public class MainActivity extends AppCompatActivity {
         editTextSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -157,10 +162,10 @@ public class MainActivity extends AppCompatActivity {
             });
             editButton.setOnClickListener((View v) -> {
                 runOnUiThread(() -> {
-                    ((TextView)findViewById(R.id.editTextLogin)).setText(payload.getInfo().getLogin());
-                    ((TextView)findViewById(R.id.editTextName)).setText(payload.getInfo().getName());
-                    ((TextView)findViewById(R.id.editTextPassword)).setText(payload.getInfo().getPassword());
-                    ((TextView)findViewById(R.id.textViewId)).setText(String.valueOf(payload.getId()));
+                    ((TextView) findViewById(R.id.editTextLogin)).setText(payload.getInfo().getLogin());
+                    ((TextView) findViewById(R.id.editTextName)).setText(payload.getInfo().getName());
+                    ((TextView) findViewById(R.id.editTextPassword)).setText(payload.getInfo().getPassword());
+                    ((TextView) findViewById(R.id.textViewId)).setText(String.valueOf(payload.getId()));
                     openEditMenu(Utils.getIndex(editButtonIds, v.getId()));
                 });
             });
@@ -173,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 Log.e("ERROR", String.valueOf(e));
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
@@ -192,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout editMenu = findViewById(R.id.editMenuBackground);
         editMenu.setVisibility(View.VISIBLE);
         Button buttonSave = findViewById(R.id.buttonSave);
+        ConstraintLayout slider = findViewById(R.id.editMenuSlider);
         buttonSave.setOnClickListener((View v) -> {
             TextView nameView = findViewById(nameIds[index]);
             TextView loginView = findViewById(loginIds[index]);
@@ -210,7 +217,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("ERROR", String.valueOf(e));
                 }
 
-                @Override public void onResponse(Call call, Response response) throws IOException {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String responseStr = response.body().string();
                         Log.i("success", responseStr);
@@ -223,11 +231,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
+        ObjectAnimator animator = ObjectAnimator.ofFloat(slider, "Y", slider.getY() + Utils.dpToPx(600), Utils.dpToPx(20));
+        animator.setDuration(300);
+        animator.start();
     }
 
     private void closeEditMenu() {
         ConstraintLayout editMenu = findViewById(R.id.editMenuBackground);
-        editMenu.setVisibility(View.GONE);
+        ConstraintLayout slider = findViewById(R.id.editMenuSlider);
+
+        ObjectAnimator animator = ObjectAnimator.ofFloat(slider, "Y", Utils.dpToPx(20), slider.getY() + Utils.dpToPx(600));
+        animator.setDuration(300);
+        animator.start();
+        new Handler().postDelayed(() -> {
+            editMenu.setVisibility(View.GONE);
+        }, 300);
+
     }
 
     private void search(String query) {
@@ -248,8 +267,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (name.contains(query) || login.contains(query) || password.contains(query) || date.contains(query)) {
                     userCard.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     userCard.setVisibility(View.GONE);
                 }
             });

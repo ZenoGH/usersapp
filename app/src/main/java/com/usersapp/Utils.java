@@ -4,7 +4,9 @@ package com.usersapp;
 import android.app.Activity;
 
 
+import android.content.res.Resources;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.google.gson.Gson;
 
@@ -107,5 +109,11 @@ public class Utils {
             }
         }
         return -1;
+    }
+
+    static int dpToPx(int valueInDp) {
+        float valueInPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, valueInDp, Resources.getSystem().getDisplayMetrics());
+        return (int) valueInPx;
     }
 }

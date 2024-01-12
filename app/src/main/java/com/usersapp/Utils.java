@@ -80,4 +80,32 @@ public class Utils {
         call.enqueue(callback);
         return call;
     }
+    static Call put(String url, String json, Callback callback) {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+    static Call delete(String url, Callback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public static <T> int getIndex(T[] array, T element) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(element)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

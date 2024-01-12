@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="#00FFFFFF"
-    android:backgroundTintMode="add"
     tools:context=".MainActivity">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingTop="30dp"
@@ -28,7 +27,7 @@
             android:layout_marginBottom="1dp"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="42dp"/>
+            android:padding="42dp" />
     </ScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,11 +57,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/searchButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@drawable/search_button"
+            android:gravity="center"
             android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +71,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editMenuBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -81,12 +82,13 @@
 
         <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/blur"
+            android:id="@+id/darkBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/gray_background"></RelativeLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editMenuSlider"
             android:layout_width="match_parent"
             android:layout_height="639dp"
             android:background="@drawable/edit_window"
@@ -149,7 +151,7 @@
                 app:layout_constraintVertical_bias="0.22000003" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/textViewId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="id"

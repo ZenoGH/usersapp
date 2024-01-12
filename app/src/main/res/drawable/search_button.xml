@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:scaleType="fitXY" android:gravity="center">
-    <item
-        android:scaleType="fitXY"
-        android:drawable="@drawable/circle"
-        android:gravity="center"/>
-    <item
-        android:scaleType="fitCenter"
-        android:drawable="@drawable/search"
-        android:gravity="center"/>
-</layer-list>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/search_button_drawable"
+    />

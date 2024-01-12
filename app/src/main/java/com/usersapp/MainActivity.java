@@ -1,9 +1,12 @@
 package com.usersapp;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +18,6 @@ import android.widget.TextView;
 
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,12 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
     Payload[] currentData;
     int[] userIds;
-    //int[] deleteButtonIds;
+    View[] userCards;
     Integer[] editButtonIds;
     Integer[] deleteButtonIds;
     int[] passwordIds;
     int[] loginIds;
     int[] nameIds;
+    int[] dateIds;
 
 
     @Override
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RelativeLayout relativeLayout = findViewById(R.id.darkBackground);
+        Button buttonCancel = findViewById(R.id.buttonCancel);
+        EditText editTextSearch = findViewById(R.id.editTextSearch);
+
         relativeLayout.getBackground().setAlpha(50);
 
         try {
@@ -46,17 +52,40 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
         recievePayloads();
-        Button buttonCancel = findViewById(R.id.buttonCancel);
+
         buttonCancel.setOnClickListener((View v) -> {
             runOnUiThread(this::closeEditMenu);
+        });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                runOnUiThread(() -> {
+                    closeEditMenu();
+                });
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String query = String.valueOf(editable);
+                search(query.toLowerCase());
+            }
         });
     }
 
     public void fillLayoutFromArray(Payload[] payloads) {
         LinearLayout userLayout = (LinearLayout) findViewById(R.id.userLayout);
+        userLayout.removeAllViews();
         currentData = payloads;
         int data_length = currentData.length;
-        userLayout.removeAllViews();
         int n = -1;
         userIds = new int[data_length];
         deleteButtonIds = new Integer[data_length];
@@ -64,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
         passwordIds = new int[data_length];
         loginIds = new int[data_length];
         nameIds = new int[data_length];
+        dateIds = new int[data_length];
+        userCards = new View[data_length];
         for (Payload payload : payloads) {
             n++;
             ConstraintLayout newCard = (ConstraintLayout) getLayoutInflater()
@@ -96,11 +127,12 @@ public class MainActivity extends AppCompatActivity {
             passwordIds[n] = textViewPassword.getId();
             loginIds[n] = textViewLogin.getId();
             nameIds[n] = textViewName.getId();
+            dateIds[n] = textViewDate.getId();
             editButtonIds[n] = editButton.getId();
             deleteButtonIds[n] = deleteButton.getId();
+            userCards[n] = userCard;
 
             deleteButton.setOnClickListener((View v) -> {
-                int vId = v.getId();
                 int index = Utils.getIndex(deleteButtonIds, v.getId());
                 String path = "delete/" + String.valueOf(index + 1);
                 Utils.delete(Utils.url + path, new Callback() {
@@ -196,5 +228,31 @@ public class MainActivity extends AppCompatActivity {
     private void closeEditMenu() {
         ConstraintLayout editMenu = findViewById(R.id.editMenuBackground);
         editMenu.setVisibility(View.GONE);
+    }
+
+    private void search(String query) {
+        if (userCards == null) {
+            return;
+        }
+        int index = -1;
+        for (View userCard : userCards) {
+            index++;
+            TextView nameView = findViewById(nameIds[index]);
+            TextView loginView = findViewById(loginIds[index]);
+            TextView passwordView = findViewById(passwordIds[index]);
+            TextView dateView = findViewById(dateIds[index]);
+            String name = nameView.getText().toString().toLowerCase();
+            String login = loginView.getText().toString().toLowerCase();
+            String password = passwordView.getText().toString().toLowerCase();
+            String date = dateView.getText().toString().toLowerCase();
+            runOnUiThread(() -> {
+                if (name.contains(query) || login.contains(query) || password.contains(query) || date.contains(query)) {
+                    userCard.setVisibility(View.VISIBLE);
+                }
+                else {
+                    userCard.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 }

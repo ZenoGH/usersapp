@@ -113,7 +113,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.19999999" />
+                app:layout_constraintVertical_bias="0.2" />
 
             <EditText
                 android:id="@+id/editTextLogin"
@@ -128,10 +128,9 @@
                 android:text="login"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.503"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextName"
-                app:layout_constraintVertical_bias="0.22000003" />
+                app:layout_constraintVertical_bias="0.2" />
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -147,8 +146,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextLogin"
-                app:layout_constraintVertical_bias="0.22000003" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextName"
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
                 android:id="@+id/textViewId"
@@ -172,7 +171,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/editTextName"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.98" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -184,7 +183,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/editTextLogin"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.98" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -197,11 +196,11 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/editTextPassword"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="0.98" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonSave"
-                android:layout_width="wrap_content"
+                android:layout_width="125dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_rounded_gray"
                 android:text="Сохранить"
@@ -214,14 +213,15 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonCancel"
-                android:layout_width="wrap_content"
+                android:layout_width="125dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_rounded_gray"
                 android:text="Отменить"
                 android:textColor="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/buttonSave"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

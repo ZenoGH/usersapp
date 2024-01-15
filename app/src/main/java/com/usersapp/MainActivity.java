@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.IOException;
 
@@ -26,7 +29,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-
+    BottomSheetDialog bottomSheet;
     Payload[] currentData;
     int[] userIds;
     View[] userCards;
@@ -42,11 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RelativeLayout relativeLayout = findViewById(R.id.darkBackground);
-        Button buttonCancel = findViewById(R.id.buttonCancel);
-        EditText editTextSearch = findViewById(R.id.editTextSearch);
+        //RelativeLayout relativeLayout = findViewById(R.id.darkBackground);
 
-        relativeLayout.getBackground().setAlpha(50);
+        EditText editTextSearch = findViewById(R.id.editTextSearch);
+        bottomSheet = new BottomSheetDialog(this);
+        bottomSheet.setContentView(R.layout.edit_slider_layout);
+
+        //relativeLayout.getBackground().setAlpha(50);
 
         try {
             Utils.test();
@@ -55,18 +60,6 @@ public class MainActivity extends AppCompatActivity {
         }
         recievePayloads();
 
-        buttonCancel.setOnClickListener((View v) -> {
-            runOnUiThread(this::closeEditMenu);
-        });
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                runOnUiThread(() -> {
-                    closeEditMenu();
-                });
-            }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
 
         editTextSearch.addTextChangedListener(new TextWatcher() {
 
@@ -84,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 search(query.toLowerCase());
             }
         });
+
     }
 
     public void fillLayoutFromArray(Payload[] payloads) {
@@ -162,10 +156,11 @@ public class MainActivity extends AppCompatActivity {
             });
             editButton.setOnClickListener((View v) -> {
                 runOnUiThread(() -> {
-                    ((TextView) findViewById(R.id.editTextLogin)).setText(payload.getInfo().getLogin());
-                    ((TextView) findViewById(R.id.editTextName)).setText(payload.getInfo().getName());
-                    ((TextView) findViewById(R.id.editTextPassword)).setText(payload.getInfo().getPassword());
-                    ((TextView) findViewById(R.id.textViewId)).setText(String.valueOf(payload.getId()));
+                    ((TextView) bottomSheet.findViewById(R.id.editTextLogin)).setText(payload.getInfo().getLogin());
+                    ((TextView) bottomSheet.findViewById(R.id.editTextName)).setText(payload.getInfo().getName());
+                    ((TextView) bottomSheet.findViewById(R.id.editTextPassword)).setText(payload.getInfo().getPassword());
+                    ((TextView) bottomSheet.findViewById(R.id.textViewId)).setText(String.valueOf(payload.getId()));
+
                     openEditMenu(Utils.getIndex(editButtonIds, v.getId()));
                 });
             });
@@ -195,17 +190,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openEditMenu(int index) {
-        ConstraintLayout editMenu = findViewById(R.id.editMenuBackground);
-        editMenu.setVisibility(View.VISIBLE);
-        Button buttonSave = findViewById(R.id.buttonSave);
-        ConstraintLayout slider = findViewById(R.id.editMenuSlider);
+        BottomSheetBehavior behavior = bottomSheet.getBehavior();
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        Button buttonCancel = bottomSheet.findViewById(R.id.buttonCancel);
+        buttonCancel.setOnClickListener((View v) -> {
+            runOnUiThread(this::closeEditMenu);
+        });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                runOnUiThread(() -> {
+                    closeEditMenu();
+                });
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+        Button buttonSave = bottomSheet.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener((View v) -> {
             TextView nameView = findViewById(nameIds[index]);
             TextView loginView = findViewById(loginIds[index]);
             TextView passwordView = findViewById(passwordIds[index]);
-            EditText nameEdit = findViewById(R.id.editTextName);
-            EditText loginEdit = findViewById(R.id.editTextLogin);
-            EditText passwordEdit = findViewById(R.id.editTextPassword);
+            EditText nameEdit = bottomSheet.findViewById(R.id.editTextName);
+            EditText loginEdit = bottomSheet.findViewById(R.id.editTextLogin);
+            EditText passwordEdit = bottomSheet.findViewById(R.id.editTextPassword);
             nameView.setText(nameEdit.getText().toString());
             loginView.setText(loginEdit.getText().toString());
             passwordView.setText(passwordEdit.getText().toString());
@@ -231,22 +238,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
-        ObjectAnimator animator = ObjectAnimator.ofFloat(slider, "Y", slider.getY() + Utils.dpToPx(600), Utils.dpToPx(20));
-        animator.setDuration(300);
-        animator.start();
+        bottomSheet.show();
     }
 
     private void closeEditMenu() {
-        ConstraintLayout editMenu = findViewById(R.id.editMenuBackground);
-        ConstraintLayout slider = findViewById(R.id.editMenuSlider);
-
-        ObjectAnimator animator = ObjectAnimator.ofFloat(slider, "Y", Utils.dpToPx(20), slider.getY() + Utils.dpToPx(600));
-        animator.setDuration(300);
-        animator.start();
-        new Handler().postDelayed(() -> {
-            editMenu.setVisibility(View.GONE);
-        }, 300);
-
+        bottomSheet.dismiss();
     }
 
     private void search(String query) {

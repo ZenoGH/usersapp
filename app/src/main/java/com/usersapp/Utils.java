@@ -5,8 +5,12 @@ import android.app.Activity;
 
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.TouchDelegate;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.gson.Gson;
 
@@ -72,6 +76,7 @@ public class Utils {
         call.enqueue(callback);
         return call;
     }
+
     static Call post(String url, String json, Callback callback) {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
@@ -82,6 +87,7 @@ public class Utils {
         call.enqueue(callback);
         return call;
     }
+
     static Call put(String url, String json, Callback callback) {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
@@ -92,6 +98,7 @@ public class Utils {
         call.enqueue(callback);
         return call;
     }
+
     static Call delete(String url, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)
@@ -116,4 +123,5 @@ public class Utils {
                 TypedValue.COMPLEX_UNIT_DIP, valueInDp, Resources.getSystem().getDisplayMetrics());
         return (int) valueInPx;
     }
+
 }

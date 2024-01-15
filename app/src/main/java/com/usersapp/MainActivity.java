@@ -7,12 +7,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         nameIds = new int[data_length];
         dateIds = new int[data_length];
         userCards = new View[data_length];
+
         for (Payload payload : payloads) {
             n++;
             ConstraintLayout newCard = (ConstraintLayout) getLayoutInflater()
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             textViewName.setId(View.generateViewId());
             deleteButton.setId(View.generateViewId());
             editButton.setId(View.generateViewId());
+
 
 
             userIds[n] = n + 1;
@@ -195,8 +199,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openEditMenu(int index) {
+        bottomSheet.setDismissWithAnimation(true);
         BottomSheetBehavior behavior = bottomSheet.getBehavior();
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        behavior.setSkipCollapsed(true);
+        behavior.setHideable(true);
         Button buttonCancel = bottomSheet.findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener((View v) -> {
             runOnUiThread(this::closeEditMenu);
@@ -274,4 +281,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 }

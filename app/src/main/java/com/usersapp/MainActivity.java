@@ -2,9 +2,12 @@ package com.usersapp;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.animation.ObjectAnimator;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -45,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         //RelativeLayout relativeLayout = findViewById(R.id.darkBackground);
 
         EditText editTextSearch = findViewById(R.id.editTextSearch);
-        bottomSheet = new BottomSheetDialog(this);
+        bottomSheet = new BottomSheetDialog(this, R.style.NewDialog);
         bottomSheet.setContentView(R.layout.edit_slider_layout);
+
 
         //relativeLayout.getBackground().setAlpha(50);
 

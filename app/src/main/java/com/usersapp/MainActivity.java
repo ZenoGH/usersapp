@@ -2,11 +2,7 @@ package com.usersapp;
 
 
 import static com.usersapp.Network.NetworkService.RequestType.DELETE;
-import static com.usersapp.Network.NetworkService.RequestType.PUT;
 
-import static java.lang.invoke.VarHandle.AccessMode.GET;
-
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -22,37 +18,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.usersapp.Network.EntryRepository;
 import com.usersapp.Network.NetworkService;
-import com.usersapp.Network.Payload;
+import com.usersapp.Network.Entry;
 import com.usersapp.Network.SimpleCallback;
 
 public class MainActivity extends AppCompatActivity {
-    BottomSheetDialog bottomSheet;
-    Payload[] currentData;
+    Entry[] currentData;
     //    int[] userIds;
     View[] userCards;
-//    Integer[] editButtonIds;
-//    Integer[] deleteButtonIds;
-//    int[] passwordIds;
-//    int[] loginIds;
-//    int[] nameIds;
-//    int[] dateIds;
-
-    private final NetworkService networkService = new NetworkService("https://rest-full-for-edu.onrender.com/api/");
-
+    private final EntryRepository entryRepository = new EntryRepository();
+    private final NetworkService networkService = new NetworkService("https://rest-full-for-edu.onrender.com/api/", entryRepository);
+    private EditMenu editMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         EditText editTextSearch = findViewById(R.id.editTextSearch);
-        bottomSheet = new BottomSheetDialog(this, R.style.NewDialog);
-        bottomSheet.setContentView(R.layout.edit_slider_layout);
-        recievePayloads();
+        networkService.updateRepository();
+        fillLayoutFromArray(entryRepository.getEntries());
+        editMenu = new EditMenu(this, this, networkService);
 
         editTextSearch.addTextChangedListener(new TextWatcher() {
 
@@ -73,15 +60,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void fillLayoutFromArray(Payload[] payloads) {
+    public void fillLayoutFromArray(Entry[] entries) {
         LinearLayout userLayout = (LinearLayout) findViewById(R.id.userLayout);
         userLayout.removeAllViews();
-        currentData = payloads;
+        currentData = entries;
         int dataLength = currentData.length;
         int n = -1;
         userCards = new View[dataLength];
 
-        for (Payload payload : payloads) {
+        for (Entry entry : entries) {
             n++;
             ConstraintLayout newCard = (ConstraintLayout) getLayoutInflater()
                     .inflate(R.layout.user_card_layout, userLayout, false);
@@ -95,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
             Button deleteButton = userCard.findViewById(R.id.deleteButton);
             Button editButton = userCard.findViewById(R.id.editButton);
 
-            textViewName.setText(payload.getInfo().getName());
-            textViewPassword.setText(payload.getInfo().getPassword());
-            textViewLogin.setText(payload.getInfo().getLogin());
-            textViewDate.setText(payload.getDate());
+            textViewName.setText(entry.getInfo().getName());
+            textViewPassword.setText(entry.getInfo().getPassword());
+            textViewLogin.setText(entry.getInfo().getLogin());
+            textViewDate.setText(entry.getDate());
 
-            userCard.setId(payload.getId());
+            userCard.setId(entry.getId());
             userCards[n] = userCard;
 
             deleteButton.setOnClickListener((View v) -> {
@@ -114,76 +101,20 @@ public class MainActivity extends AppCompatActivity {
                 ));
             });
             editButton.setOnClickListener((View v) -> runOnUiThread(() -> {
-                ((TextView) bottomSheet.findViewById(R.id.editTextLogin))
-                        .setText(payload.getInfo().getLogin());
-                ((TextView) bottomSheet.findViewById(R.id.editTextName))
-                        .setText(payload.getInfo().getName());
-                ((TextView) bottomSheet.findViewById(R.id.editTextPassword))
-                        .setText(payload.getInfo().getPassword());
-                ((TextView) bottomSheet.findViewById(R.id.textViewId))
-                        .setText(String.valueOf(payload.getId()));
+                ((TextView) editMenu.bottomSheet.findViewById(R.id.editTextLogin))
+                        .setText(entry.getInfo().getLogin());
+                ((TextView) editMenu.bottomSheet.findViewById(R.id.editTextName))
+                        .setText(entry.getInfo().getName());
+                ((TextView) editMenu.bottomSheet.findViewById(R.id.editTextPassword))
+                        .setText(entry.getInfo().getPassword());
+                ((TextView) editMenu.bottomSheet.findViewById(R.id.textViewId))
+                        .setText(String.valueOf(entry.getId()));
 
-                openEditMenu((View) v.getParent().getParent());
+                editMenu.openEditMenu((View) v.getParent().getParent());
             }));
         }
     }
 
-    private void recievePayloads() {
-        networkService.request(NetworkService.RequestType.GET, "read", new SimpleCallback(response -> {
-            runOnUiThread(() -> {
-                fillLayoutFromArray(Utils.gson.fromJson(response, Payload[].class));
-            });
-        }));
-    }
-
-    private void openEditMenu(View view) {
-        bottomSheet.setDismissWithAnimation(true);
-        BottomSheetBehavior behavior = bottomSheet.getBehavior();
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        behavior.setSkipCollapsed(true);
-        behavior.setHideable(true);
-        Button buttonCancel = bottomSheet.findViewById(R.id.buttonCancel);
-        buttonCancel.setOnClickListener((View v) -> runOnUiThread(this::closeEditMenu));
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                runOnUiThread(() -> closeEditMenu());
-            }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
-        Button buttonSave = bottomSheet.findViewById(R.id.buttonSave);
-        buttonSave.setOnClickListener((View v) -> {
-            TextView nameView = view.findViewById(R.id.textViewName);
-            TextView loginView = view.findViewById(R.id.textViewLogin);
-            TextView passwordView = view.findViewById(R.id.textViewPassword);
-
-            EditText nameEdit = bottomSheet.findViewById(R.id.editTextName);
-            EditText loginEdit = bottomSheet.findViewById(R.id.editTextLogin);
-            EditText passwordEdit = bottomSheet.findViewById(R.id.editTextPassword);
-            if (!InputService.fillViewFromEdit(nameView, nameEdit)
-                    || !InputService.fillViewFromEdit(loginView, loginEdit)
-                    || !InputService.fillViewFromEdit(passwordView, passwordEdit)) {
-                return;
-            }
-            Payload newPayload =
-                    new Payload(
-                            nameEdit.getText().toString(),
-                            loginEdit.getText().toString(),
-                            passwordEdit.getText().toString()
-                    );
-            networkService.request(PUT,
-                    "update/" + view.getId(),
-                    Utils.gson.toJson(newPayload, Payload.class),
-                    new SimpleCallback(response -> {
-                        runOnUiThread(this::closeEditMenu);
-                    }));
-        });
-        bottomSheet.show();
-    }
-
-    private void closeEditMenu() {
-        bottomSheet.dismiss();
-    }
 
     private void search(String query) {
         if (userCards == null) {

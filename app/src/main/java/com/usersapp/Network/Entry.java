@@ -3,12 +3,12 @@ package com.usersapp.Network;
 
 import com.usersapp.User;
 
-public class Payload {
+public class Entry {
     private int id;
     private User info;
     private String date;
 
-    public Payload(String name, String login, String password) {
+    public Entry(String name, String login, String password) {
         info = new User(name, login, password);
     }
 

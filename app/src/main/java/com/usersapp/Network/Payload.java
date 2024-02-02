@@ -1,6 +1,7 @@
-package com.usersapp;
+package com.usersapp.Network;
 
-import java.util.Date;
+
+import com.usersapp.User;
 
 public class Payload {
     private int id;

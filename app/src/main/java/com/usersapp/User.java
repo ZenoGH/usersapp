@@ -5,9 +5,6 @@ public class User {
     private String login;
     private String password;
 
-    public boolean getNext() {
-        return false;
-    }
 
     public User(String name, String login, String password) {
         this.name = name;

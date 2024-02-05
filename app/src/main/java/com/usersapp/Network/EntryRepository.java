@@ -26,6 +26,7 @@ public class EntryRepository {
 
     public Entry[] getEntries() {
         Entry[] myEntries = new Entry[entries.size()];
-        return entries.values().toArray(myEntries);
+        entries.values().toArray(myEntries);
+        return myEntries;
     }
 }

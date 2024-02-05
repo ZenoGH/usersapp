@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.Gson;
 import com.usersapp.Network.NetworkService;
 import com.usersapp.Network.Entry;
 import com.usersapp.Network.SimpleCallback;
@@ -26,6 +27,7 @@ public class EditMenu {
     private Context context;
     private NetworkService networkService;
     private  LifecycleOwner lifecycleOwner;
+    private Gson gson = new Gson();
     EditMenu(Context context, LifecycleOwner lifecycleOwner, NetworkService networkService) {
         bottomSheet = new BottomSheetDialog(context, R.style.NewDialog);
         bottomSheet.setContentView(R.layout.edit_slider_layout);
@@ -70,7 +72,7 @@ public class EditMenu {
                     );
             networkService.request(PUT,
                     "update/" + view.getId(),
-                    Utils.gson.toJson(newEntry, Entry.class),
+                    gson.toJson(newEntry, Entry.class),
                     new SimpleCallback(response -> {
                         runOnUiThread(this::closeEditMenu);
                     }));

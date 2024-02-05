@@ -23,6 +23,8 @@ import com.usersapp.Network.NetworkService;
 import com.usersapp.Network.Entry;
 import com.usersapp.Network.SimpleCallback;
 
+import java.util.concurrent.Future;
+
 public class MainActivity extends AppCompatActivity {
     Entry[] currentData;
     //    int[] userIds;

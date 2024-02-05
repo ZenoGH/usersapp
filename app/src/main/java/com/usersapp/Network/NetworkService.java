@@ -1,8 +1,9 @@
 package com.usersapp.Network;
 
 import com.google.gson.Gson;
-import com.usersapp.Utils;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -74,15 +75,19 @@ public class NetworkService {
 
     public void updateRepository() {
         repository.clearEntries();
-        request(NetworkService.RequestType.GET, "read", new SimpleCallback(response -> {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        request(NetworkService.RequestType.GET, "read", new SimpleCallback(response -> {;
             Entry[] entries = gson.fromJson(response, Entry[].class);
             for (Entry entry : entries) {
                 repository.add(entry);
             }
+            future.complete(null);
         }));
+
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
-
-//    runOnUiThread(() -> {
-//        fillLayoutFromArray(Utils.gson.fromJson(response, Entry[].class));
-//        });
